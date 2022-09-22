@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<style type="text/css">
+  table{width: 80% !important;margin-left: auto;margin-right: auto;}
+  body {font-size:.8rem;}
+  #div1{left: 27%;
+    position:relative;
+    margin: 0;
+    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #212529;
+    text-align: left;
+    background-color: #fff;}
+    .match{
+    background: aquamarine;
+}
+
+  .no_match{
+    background: #FAA0A0;
+}
+
+</style>
+
+<script>
+  $(document).ready(function() {
+  
+  //$('table:first tr').each(function() {
+  //var lasttd=  $(this).find(':last-child').innerHTML
+  //alert(lasttd);
+  //your code
+  var chk = '{{ final }}';
+  //alert(chk);
+  if(chk=='final')
+  {
+    $("table tr td:nth-last-child(2)").each(function(){ 
+    if($(this).text()=='Matched')
+    {
+    $(this).addClass('match');  
+    }
+    else
+    {
+    $(this).addClass('no_match');   
+    }
+
+    
+  }) 
+  }
+
+  
+  
+
+});
+
+//});
+  
+
+</script>
+
+</head>
+<body>
+  <div>
+
+    <img src="https://www.agilealliance.org/wp-content/uploads/2021/07/wwt-logo.png" width="260" height="80" style = "margin: -140 0 50px 5px; float: left; border: 1px;"><br>
+  `</div>
+
+<div id="div1"><br><b>Data for PO# {{po_num}}</b></div>
+<br><br>
+{% for table in tables %}
+            {{ table|safe }}
+{% endfor %}
+
+<script type="text/javascript">
+  function tableToCSV() {
+
+      // Variable to store the final csv data
+      var csv_data = [];
+
+      // Get each row data
+      var rows = document.getElementsByTagName('tr');
+      for (var i = 0; i < rows.length; i++) {
+
+          // Get each column data
+          var cols = rows[i].querySelectorAll('td,th');
+
+          // Stores each csv row data
+          var csvrow = [];
+          for (var j = 0; j < cols.length; j++) {
+
+              // Get the text data of each cell
+              // of a row and push it to csvrow
+              csvrow.push(cols[j].innerHTML);
+          }
+
+          // Combine each column value with comma
+          csv_data.push(csvrow.join(","));
+      }
+
+      // Combine each row data with new line character
+      csv_data = csv_data.join('\n');
+
+      // Call this function to download csv file 
+      downloadCSVFile(csv_data);
+
+  }
+
+  function downloadCSVFile(csv_data) {
+
+      // Create CSV file object and feed
+      // our csv_data into it
+      CSVFile = new Blob([csv_data], {
+          type: "text/csv"
+      });
+
+      // Create to temporary link to initiate
+      // download process
+      var temp_link = document.createElement('a');
+
+      // Download csv file
+      temp_link.download = "GfG.csv";
+      var url = window.URL.createObjectURL(CSVFile);
+      temp_link.href = url;
+
+      // This link should not be displayed
+      temp_link.style.display = "none";
+      document.body.appendChild(temp_link);
+
+      // Automatically click the link to
+      // trigger download
+      temp_link.click();
+      document.body.removeChild(temp_link);
+  }
+</script>
+<button type="submit"><a href ="/">Go back</a></button>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  
+   <style type="text/css">
+     
+     .button{
+    margin: 0;
+    color: #fff;
+    background: #4a3c7a;
+    border: none;
+    width: 40%;
+    height: 35px;
+    margin: auto;
+    display: block;
+    border-radius: 4px;
+    border-bottom: 4px solid #000000;
+    transition: all .2s ease;
+    outline: none;
+  }
+   </style>
+   
+   <script type="text/javascript">
+      $(document).ready(function(){
+      
+      var chk = '{{ for_alert }}';
+      //alert(chk);
+      if(chk=='not found')
+      {
+          alert('PO# {{ po_num }} not found in the database. Please upload scanned copy of Pack slip to verify.');
+      }
+  });
+  
+  
+  </script>
+  
+  </head>
+  <body>
+  
+  <div>
+  
+    <img src="https://www.agilealliance.org/wp-content/uploads/2021/07/wwt-logo.png" width="210" height="66" style = "margin: 0 0 50px 5px; float: left; border: 1px;"><br>
+  `</div></body>
+  <div style="text-align: center;"><br><b>OCR Data for PO# {{po_num}}</b></div>
+  <br>
+  <table class="dataframe table table-striped table-bordered table-condensed" style="width: auto; margin-left: 40%;margin-right: auto;">
+              <form action = "/match" method = "POST" 
+           enctype = "multipart/form-data">
+              <tbody>
+  
+                <!--
+                <tr>
+                {% for header in headers %}<th>{{ header }}&nbsp&nbsp</th>{% endfor %}
+                </tr>
+              -->
+               <thead>
+              <tr>
+              <th>Serial Number</th>
+              <th>Quantity</th>
+              </tr> 
+               </thead> 
+              {% for row in table %}
+                  <tr>
+                      <td><input name ="serial_number"  type="textbox" value={{row.1}}></td>
+                      <td><input name ="quantity"  type="textbox" value={{row.0}}></td>
+                  </tr>
+              {% endfor %}
+              <tr>
+                <td colspan="2">
+                  <button type="submit" class="button">Match</button>
+  
+                  <!--<input type = "submit" style="
+      margin: auto;
+      display: block;
+  "/> -->
+  </td>
+              </tr>
+              </tbody>
+            </form>
+          </table>
+
+        <!-- hi -->
