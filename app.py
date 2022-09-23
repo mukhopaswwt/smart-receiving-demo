@@ -9,7 +9,7 @@ from fuzzywuzzy import fuzz
 from fuzzywuzzy import process
 import pytesseract
 
-pytesseract.pytesseract.tesseract_cmd = os.getenv('PYTESSERACT')
+pytesseract.pytesseract.tesseract_cmd = os.getenv('TESSERACT_PATH')
 
 po_num='test'
 
