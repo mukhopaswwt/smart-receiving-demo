@@ -19,31 +19,6 @@ app = Flask(__name__)
 
 # file_path='WWTPO_datasets\po_' + str(po_num) + '.csv'
 
-def read_csv_from_aws(file_path):
-    """Returns pandas dataframe of csv located at S3
-
-
-
-       Args:
-            s3_file_path (str): path of the file at AWS S3, Example 'Raw Zone/AIOps/raw_data/node_cpu_used_percent_8nodes.csv'
-        """
-    ACCESS_KEY = 'AKIAUIWY5BRQZZ7L4TOU'
-    SECRET_KEY = 'NCUaU/GY854+/OAj69EjNCGLM8GlrlaBd/+K+L7X'
-
-    s3 = boto3.client('s3', aws_access_key_id=ACCESS_KEY,
-                      aws_secret_access_key=SECRET_KEY)
-
-
-    # obj = s3.get_object(
-    #     Bucket='smart-receiving-data',
-    #     Key=s3_file_path)
-
-    obj =s3.get_object(Bucket='smart-receiving-data', Key= file_path)
-    data = pd.read_csv(obj['Body'], header=1)
-       # Read data from the S3 object
-    
-    return data
-
 UPLOAD_FOLDER = os.path.join(app.root_path, './data/images')
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 
@@ -55,11 +30,9 @@ def fuzzy_matching(df, po_num):
     :param df: table dataframe extracted using OCR
     :return: final dataframe with matching content
     '''
-    database_filemane = 'WWTPO_datasets/po_' + str(po_num) + '.csv'
-
-    dell_po = read_csv_from_aws(database_filemane)  
+    database_filename = '.\WWTPO_datasets\po_' + str(po_num) + '.csv'
    
-    ##dell_po=pd.read_csv(os.path.join(app.root_path, database_filename), header=1)
+    dell_po=pd.read_csv(os.path.join(app.root_path, database_filename), header=1)
     dell_po=dell_po[['WWT PO Number','Serial Number','Quantity','Item Description']].drop_duplicates()
     print('dell_df shape', dell_po.shape)
     df = df.add_prefix('ocr_')
@@ -559,3 +532,4 @@ def demo():
 
 if __name__ == '__main__':
     app.run(host= '0.0.0.0', debug = True)
+
