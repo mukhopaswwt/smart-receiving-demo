@@ -16,20 +16,6 @@ For eg: docker run -it -v /mnt/rnd-nlp-cord19/:/mnt/host-dir/ -p 8888:8888 -p 50
 
 Once you get inside the running container, navigate to the folder where you have mounted your host data folder. Run the command - cd /mnt/host-dir/
 
-# Installing Tesseract OCR as an environment variable
-
-Install Tesseract-OCR and the related developer tools by running the following lines.
-
-sudo apt install tesseract-ocr
-
-sudo apt install libtesseract-dev
-
-Locate the downloaded files by running the commands :
-
-whereis tesseract
-
-/usr/bin/tesseract
-
 ## Code Instructions
 
 To run the application on local server, install the project directory having all the codes and dependencies.

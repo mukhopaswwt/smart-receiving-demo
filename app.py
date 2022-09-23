@@ -9,15 +9,11 @@ from fuzzywuzzy import fuzz
 from fuzzywuzzy import process
 import pytesseract
 
-import boto3
-
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+pytesseract.pytesseract.tesseract_cmd = os.getenv('PYTESSERACT')
 
 po_num='test'
 
 app = Flask(__name__)
-
-# file_path='WWTPO_datasets\po_' + str(po_num) + '.csv'
 
 UPLOAD_FOLDER = os.path.join(app.root_path, './data/images')
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
