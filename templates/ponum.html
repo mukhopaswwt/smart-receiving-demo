@@ -28,6 +28,26 @@ form p{
 
 }
 
+#loading {
+  position: fixed;
+  display: block;
+  width: 70%;
+  height: 70%;
+  top: 0;
+  left: 0;
+  text-align: center;
+  opacity: 0.7;
+  background-color: #fff;
+  z-index: 99;
+}
+
+#loading-image {
+  position: absolute;
+  top: 80px;
+  left: 100px;
+  z-index: 100;
+}
+
 form button{
   margin: 0;
   color: rgb(255, 255, 255);
@@ -76,13 +96,25 @@ form button:active{
 </style>
 
 <script type="text/javascript">
+
+const btn = document.getElementById('btn');
+
+btn.addEventListener('click', function onClick() {
+  btn.style.backgroundColor = 'salmon';
+  btn.style.color = 'white';
+});
 	
 </script>
 
 </head>
+
 <header>
   <h2 style="text-align:center; margin-top: 70px">Invoice Purchase Order</h2>
 <body>
+  <div id="loading">
+    <img id="loading-image" src="https://img.freepik.com/premium-vector/system-software-update-upgrade-concept-loading-process-screen-vector-illustration_175838-2182.jpg?w=2000" alt="Loading..." />
+  </div>
+
   <div>
 
     <img src="https://www.agilealliance.org/wp-content/uploads/2021/07/wwt-logo.png" width="260" height="80" style = "margin: -140 0 50px 5px; float: left; border: 1px;"><br>
@@ -98,9 +130,15 @@ form button:active{
       <td></td><td></td>
       <td></td>
     </tr>
-    <tr><button type="submit">Generate Table</button></tr>
+    <tr><button id="btn" type="submit">Generate Table</button></tr>
   
 </form>
+
+<script>
+  $(window).load(function() {
+    $('#loading').hide();
+  });
+</script>
 
 </body>
 </html>

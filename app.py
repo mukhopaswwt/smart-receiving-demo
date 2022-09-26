@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, send_file
 from werkzeug.utils import secure_filename
 import os, os.path
 import cv2
@@ -9,13 +9,13 @@ from fuzzywuzzy import fuzz
 from fuzzywuzzy import process
 import pytesseract
 
-pytesseract.pytesseract.tesseract_cmd = os.getenv('TESSERACT_PATH')
+pytesseract.pytesseract.tesseract_cmd = os.getenv('PYTESSERACT')
 
 po_num='test'
 
 app = Flask(__name__)
 
-UPLOAD_FOLDER = os.path.join(app.root_path, './data/images')
+UPLOAD_FOLDER = os.path.join(app.root_path, 'data', 'images')
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -26,7 +26,11 @@ def fuzzy_matching(df, po_num):
     :param df: table dataframe extracted using OCR
     :return: final dataframe with matching content
     '''
-    database_filename = '.\WWTPO_datasets\po_' + str(po_num) + '.csv'
+    po_string = "po_" + str(po_num)+ '.csv'
+    database_filename = os.path.join(os.path.abspath(os.getcwd()), 'WWTPO_datasets', po_string)
+    
+
+    #database_filename = '.\WWTPO_datasets\po_' + str(po_num) + '.csv'
    
     dell_po=pd.read_csv(os.path.join(app.root_path, database_filename), header=1)
     dell_po=dell_po[['WWT PO Number','Serial Number','Quantity','Item Description']].drop_duplicates()
@@ -58,10 +62,10 @@ def fuzzy_matching(df, po_num):
     for i in list1:
         mat1.append(process.extractOne(
           i, list2, scorer=fuzz.token_sort_ratio))
-    dell_po1_nf['fuzzy_match_text'] = mat1
+    dell_po1_nf['Fuzzy Match Text'] = mat1
     # iterating through the closest matches
     # to filter out the maximum closest match
-    for j in dell_po1_nf['fuzzy_match_text']:
+    for j in dell_po1_nf['Fuzzy Match Text']:
         print(j)
         print(type(j))
         if j[1] >= threshold:
@@ -71,16 +75,18 @@ def fuzzy_matching(df, po_num):
 
     # storing the resultant matches back
     # to dframe1
-    dell_po1_nf['fuzzy_match_text'] = mat2
-    dell_po1_fuzzy_nf=dell_po1_nf[dell_po1_nf['fuzzy_match_text']=='']
+    dell_po1_nf['Fuzzy Match Text'] = mat2
+    dell_po1_fuzzy_nf=dell_po1_nf[dell_po1_nf['Fuzzy Match Text']=='']
     dell_po1_fuzzy_nf['Match']='Not Matched'
-    dell_po1_nf=dell_po1_nf[dell_po1_nf['fuzzy_match_text']!='']
+    dell_po1_nf=dell_po1_nf[dell_po1_nf['Fuzzy Match Text']!='']
     
-    dell_po1_nf=pd.merge(dell_po1_nf, df,left_on=['fuzzy_match_text'], right_on=['ocr_serial_number'], how='left')
+    dell_po1_nf=pd.merge(dell_po1_nf, df,left_on=['Fuzzy Match Text'], right_on=['ocr_serial_number'], how='left')
     dell_po1_nf["ocr_quantity"] = dell_po1_nf["ocr_quantity"].astype(str).astype(int)
     dell_po1_nf['Match'] = np.where(dell_po1_nf['Quantity'] == dell_po1_nf['ocr_quantity'], 'Matched','Not Matched')
 
     final_df=pd.concat([dell_po1_f,dell_po1_nf,dell_po1_fuzzy_nf])
+    final_df.rename(columns={'ocr_serial_number': 'OCR Serial Number', 'ocr_quantity': 'OCR Quantity'}, inplace=True)
+    final_df["Fuzzy Match Text"].fillna('-', inplace=True)
     return final_df
 
 def image_read(path):
@@ -470,9 +476,9 @@ def asn_check():
                 extracted_table = extract_table(extracted_string, vendor)
 
             print('table done')
-            extracted_table.to_csv(os.path.join(app.root_path, './data//intermediate_data/final.csv'), index=False)
+            extracted_table.to_csv(os.path.join(app.root_path, 'data', 'intermediate_data', 'final.csv'), index=False)
 
-            df1=pd.read_csv(os.path.join(app.root_path, './data/intermediate_data/final.csv'))
+            df1=pd.read_csv(os.path.join(app.root_path, 'data', 'intermediate_data', 'final.csv'))
             df1['id'] = range(0, len(df1))
             df1.columns = ['quantity', 'serial', 'id']
             df_Final_header = list(df1)
@@ -513,9 +519,9 @@ def try_now():
         extracted_table = extract_table(extracted_string, vendor)
 
     print('table done')
-    extracted_table.to_csv(os.path.join(app.root_path, './data/intermediate_data/final.csv'), index=False)
+    extracted_table.to_csv(os.path.join(app.root_path, 'data', 'intermediate_data', 'final.csv'), index=False)
 
-    df1=pd.read_csv(os.path.join(app.root_path, './data/intermediate_data/final.csv'))
+    df1=pd.read_csv(os.path.join(app.root_path, 'data', 'intermediate_data', 'final.csv'))
     df1['id'] = range(0, len(df1))
     df1.columns = ['quantity', 'serial', 'id']
     df_Final_header = list(df1)
@@ -525,6 +531,11 @@ def try_now():
 @app.route('/demo')
 def demo():
     return render_template("image.html")
+
+@app.route('/download')
+def download_file():
+    p= "sample_images.zip"
+    return send_file(p, as_attachment=True)
 
 if __name__ == '__main__':
     app.run(host= '0.0.0.0', debug = True)
