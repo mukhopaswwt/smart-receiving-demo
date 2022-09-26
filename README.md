@@ -16,13 +16,13 @@ For eg: docker run -it -v /mnt/rnd-nlp-cord19/:/mnt/host-dir/ -p 8888:8888 -p 50
 
 Once you get inside the running container, navigate to the folder where you have mounted your host data folder. Run the command - cd /mnt/host-dir/
 
-# Steps to install Tesseract OCR -
+## Steps to install Tesseract OCR -
 
 * Run the command sudo apt install tesseract-ocr
 * Then run, sudo apt install libtesseract-dev
 * To check if tesseract is successfully installed, run command whereis tesseract. The output will show /usr/bin/tesseract if successfully installed.
 
-# Steps to set path for Tesseract as environment variable-
+## Steps to set path for Tesseract as environment variable-
 
 * Go to your home directory by running the command cd ~
 * Run the command vi .bashrc to open the environment variable editor and press I to insert
