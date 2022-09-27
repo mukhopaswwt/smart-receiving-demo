@@ -13,7 +13,7 @@ For eg: 'docker run -it -v /home/ubuntu/baa-rnd-smart-receiving:/mnt/host-dir/ -
 * Create a separate virtual environment to run the application by running the commands
 * Once you get inside the running container, navigate to the folder where you have mounted your host data folder. Run the command - 'cd /mnt/host-dir/smart-receiving-demo'
 * Install the project requirements and dependencies through 'pip3 install -r requirements.txt'
-* To run the application, run the command 'python3 app.py' 
+
 
 ### Steps to install Tesseract OCR -
 
@@ -30,6 +30,7 @@ For eg: 'docker run -it -v /home/ubuntu/baa-rnd-smart-receiving:/mnt/host-dir/ -
 
 ### Running the application
 
+* To start the application, run the command "python3 app.py"
 * Get started after going through the application deliverables on the homepage.
 * For more information about the application, check the article on smart receiving by clicking on the link provided on the page.
 * It should be imperative that the vendor selected should correspond to the invoice image being uploaded. 
