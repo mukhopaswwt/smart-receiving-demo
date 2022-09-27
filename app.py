@@ -9,7 +9,7 @@ from fuzzywuzzy import fuzz
 from fuzzywuzzy import process
 import pytesseract
 
-pytesseract.pytesseract.tesseract_cmd = os.getenv('TESSERACT_PATH')
+pytesseract.pytesseract.tesseract_cmd = os.getenv('PYTESSERACT')
 
 po_num='test'
 
@@ -87,6 +87,8 @@ def fuzzy_matching(df, po_num):
     final_df=pd.concat([dell_po1_f,dell_po1_nf,dell_po1_fuzzy_nf])
     final_df.rename(columns={'ocr_serial_number': 'OCR Serial Number', 'ocr_quantity': 'OCR Quantity'}, inplace=True)
     final_df["Fuzzy Match Text"].fillna('-', inplace=True)
+    final_df["OCR Serial Number"].fillna('-', inplace=True)
+    final_df["OCR Quantity"].fillna('-', inplace=True)
     return final_df
 
 def image_read(path):
@@ -133,7 +135,7 @@ def image_crop_table(img, vendor):
     :return: cropped image vector
     '''
     # Writing the img matrix into a file
-    cv2.imwrite(os.path.join(app.root_path, 'data\images\temp.png'), img)
+    cv2.imwrite(os.path.join(app.root_path, 'data', 'images', 'temp.png'), img)
     
     height, width = img.shape
     # Cropping image based on hard coded values for every vendor
@@ -485,58 +487,54 @@ def asn_check():
             print(df1)
             return render_template('table.html', table = df1.values, headers=df_Final_header, po_num=po_num)
             
-@app.route('/trynow', methods = ['GET', 'POST'])
-def try_now():
-    global po_num
-    po_num = '3902748'
-    global vendor
-    vendor = 'CISCO'
-    global img_loc
-    img_loc = '.\data\images\CISCO1_0_7.png'
+# @app.route('/trynow', methods = ['GET', 'POST'])
+# def try_now():
+#     global po_num
+#     po_num = '3902748'
+#     global vendor
+#     vendor = 'CISCO'
+#     global img_loc
+#     img_loc = '.\data\images\CISCO1_0_7.png'
 
-    print(po_num)
-    print(vendor)
-    print(img_loc)
-    img=image_read(img_loc)
-    print('image_read done')
-    img=preprocessing(img,vendor)
-    print('image_preprocessing done')
-    img1=image_crop_table(img, vendor)
-    print('image_crop done')
-    extracted_string=tesserect_engine(img1)
-    print('tesseract done')
+#     print(po_num)
+#     print(vendor)
+#     print(img_loc)
+#     img=image_read(img_loc)
+#     print('image_read done')
+#     img=preprocessing(img,vendor)
+#     print('image_preprocessing done')
+#     img1=image_crop_table(img, vendor)
+#     print('image_crop done')
+#     extracted_string=tesserect_engine(img1)
+#     print('tesseract done')
 
-    if vendor=='CISCO':
+#     if vendor=='CISCO':
 
-        matchObj = re.search(r"CARTONID|CARTON ID", extracted_string)
-        if matchObj is None:
-            extracted_table = extract_table(extracted_string, vendor)
-        else:
-            extracted_string = tesserect_engine(img1,vendor_specific='carton')
-            extracted_table = extract_table(extracted_string, vendor, vendor_specific='carton')
+#         matchObj = re.search(r"CARTONID|CARTON ID", extracted_string)
+#         if matchObj is None:
+#             extracted_table = extract_table(extracted_string, vendor)
+#         else:
+#             extracted_string = tesserect_engine(img1,vendor_specific='carton')
+#             extracted_table = extract_table(extracted_string, vendor, vendor_specific='carton')
 
-    else:
-        extracted_table = extract_table(extracted_string, vendor)
+#     else:
+#         extracted_table = extract_table(extracted_string, vendor)
 
-    print('table done')
-    extracted_table.to_csv(os.path.join(app.root_path, 'data', 'intermediate_data', 'final.csv'), index=False)
+#     print('table done')
+#     extracted_table.to_csv(os.path.join(app.root_path, 'data', 'intermediate_data', 'final.csv'), index=False)
 
-    df1=pd.read_csv(os.path.join(app.root_path, 'data', 'intermediate_data', 'final.csv'))
-    df1['id'] = range(0, len(df1))
-    df1.columns = ['quantity', 'serial', 'id']
-    df_Final_header = list(df1)
-    print(df1)
-    return render_template('trnow.html', table = df1.values, headers=df_Final_header, po_num=po_num)
-
-@app.route('/demo')
-def demo():
-    return render_template("image.html")
+#     df1=pd.read_csv(os.path.join(app.root_path, 'data', 'intermediate_data', 'final.csv'))
+#     df1['id'] = range(0, len(df1))
+#     df1.columns = ['quantity', 'serial', 'id']
+#     df_Final_header = list(df1)
+#     print(df1)
+#     return render_template('trnow.html', table = df1.values, headers=df_Final_header, po_num=po_num)
 
 @app.route('/download')
 def download_file():
-    p= "sample_images.zip"
+    p= os.path.join(app.root_path, 'sample_images.zip')
     return send_file(p, as_attachment=True)
 
 if __name__ == '__main__':
-    app.run(host= '0.0.0.0', debug = True)
+    app.run(host= '0.0.0.0', port=5009, debug = True)
 
